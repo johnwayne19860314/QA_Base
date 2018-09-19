@@ -1,0 +1,30 @@
+{
+  "name": "insure-base",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha test --exit"
+  },
+  "dependencies": {
+    "log4js": "^2.5.2",
+    "moment": "2.22.1",
+    "request": "2.83.0",
+    "validator": "9.4.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.9.0",
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.0",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1"
+  },
+  "description": "核心保险产品的基础模块，包括一系列初始化工具",
+  "keywords": [
+    "insure", "base"
+  ],
+  "author": "q.wang",
+  "license": "MIT"
+}

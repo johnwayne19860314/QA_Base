@@ -1,0 +1,218 @@
+nodejs mysql 数据查询例子
+时间 2014-11-11 15:28:01  姜糖水
+原文  http://www.cnphp6.com/archives/59864
+主题 MySQL Node.js
+1、安装nodejs
+
+2、安装mysql  npm包
+
+地址：https://github.com/felixge/node-mysql
+
+npm install mysql
+3、相应API查看及调用：
+
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'me',
+  password : 'secret'
+});
+
+connection.connect();
+
+connection.query('SELECT 1 + 1 AS solution', function(err, rows, fields) {
+  if (err) throw err;
+
+  console.log('The solution is: ', rows[0].solution);
+});
+
+connection.end();
+4、相关注意点及方法
+
+将相应结果进行文件形式保存，使用fs文件系统及path路径模块
+
+var $ = require('underscore');
+var fs = require('fs');
+var path = require('path');
+underscore为数据处理集合，可以简单快捷的进行数据的遍历拼接等处理
+
+npm install underscore
+connection.query('select * from  xmmember', function (err, rows) {//account 用户账户表
+	if (err) throw err;
+	var tempAccount = $.map(rows, function (c) {
+		return  {
+			id: c.ID,
+			name: c.m_username,
+			password: c.m_userpass,
+			surePassword: c.m_userpass,
+			qq: c.qq
+		}
+	});
+	fs.writeFile(path.join(__dirname, 'account.js'), JSON.stringify(tempAccount), function (err) {
+		if (err) throw err;
+		console.log("Export Account Success!");
+	});
+});
+将数据查询结果进行JSON格式转换后，导出到具体文件中，方便相应的系统进行导入等管理操作。
+
+相关API方法：
+
+1、配置query格式，进行相应update的操作，代码如下：
+
+connection.config.queryFormat = function (query, values) {
+  if (!values) return query;
+  return query.replace(/\:(\w+)/g, function (txt, key) {
+    if (values.hasOwnProperty(key)) {
+      return this.escape(values[key]);
+    }
+    return txt;
+  }.bind(this));
+};
+
+connection.query("UPDATE posts SET title = :title", { title: "Hello MySQL" });
+2、执行insert操作。如下：
+
+connection.query('INSERT INTO posts SET ?', {title: 'test'}, function(err, result) {
+  if (err) throw err;
+
+  console.log(result.insertId);
+});
+3、删除delete的执行，示例代码以下：
+
+connection.query('DELETE FROM posts WHERE title = "wrong"', function (err, result) {
+  if (err) throw err;
+
+  console.log('deleted ' + result.affectedRows + ' rows');
+})
+4、大量数据查询及操作时候，可以加入相应的容错处理：示例代码如下：
+
+var query = connection.query('SELECT * FROM posts');
+query
+  .on('error', function(err) {
+    // Handle error, an 'end' event will be emitted after this as well
+  })
+  .on('fields', function(fields) {
+    // the field packets for the rows to follow
+  })
+  .on('result', function(row) {
+    // Pausing the connnection is useful if your processing involves I/O
+    connection.pause();
+
+    processRow(row, function() {
+      connection.resume();
+    });
+  })
+  .on('end', function() {
+    // all rows have been received
+  });
+其中，err为具体出现错误时候，所需要进行的错误处理。
+
+fields为具体的执行的结果集合
+
+row为具体结果集每行的处理，可暂停执行及恢复执行。
+
+5、多个查询的同时执行处理，示例代码如下：
+
+先进行如下配置：
+
+var connection = mysql.createConnection({multipleStatements: true});
+即可进行多个语句的执行，写法如下：
+
+connection.query('SELECT 1; SELECT 2', function(err, results) {
+  if (err) throw err;
+
+  // `results` is an array with one element for every statement in the query:
+  console.log(results[0]); // [{1: 1}]
+  console.log(results[1]); // [{2: 2}]
+});
+6、结果进行组装处理，代码如下：
+
+var options = {sql: '...', nestTables: true};
+connection.query(options, function(err, results) {
+  /* results will be an array like this now:
+  [{
+    table1: {
+      fieldA: '...',
+      fieldB: '...',
+    },
+    table2: {
+      fieldA: '...',
+      fieldB: '...',
+    },
+  }, ...]
+  */
+});
+或使用如下方式：
+
+var options = {sql: '...', nestTables: '_'};
+connection.query(options, function(err, results) {
+  /* results will be an array like this now:
+  [{
+    table1_fieldA: '...',
+    table1_fieldB: '...',
+    table2_fieldA: '...',
+    table2_fieldB: '...',
+  }, ...]
+  */
+});
+7、事物的执行及处理。代码如下：
+
+connection.beginTransaction(function(err) {
+  if (err) { throw err; }
+  connection.query('INSERT INTO posts SET title=?', title, function(err, result) {
+    if (err) {
+      connection.rollback(function() {
+        throw err;
+      });
+    }
+
+    var log = 'Post ' + result.insertId + ' added';
+
+    connection.query('INSERT INTO log SET data=?', log, function(err, result) {
+      if (err) {
+        connection.rollback(function() {
+          throw err;
+        });
+      }
+      connection.commit(function(err) {
+        if (err) {
+          connection.rollback(function() {
+            throw err;
+          });
+        }
+        console.log('success!');
+      });
+    });
+  });
+});
+beginTransaction(), commit() and rollback() 三个方法分别针对SQL事物的开始执行，提交，回滚三个操作。
+
+8、执行超时的捕捉处理，示例代码如下：
+
+connection.query({sql: 'SELECT COUNT(*) AS count FROM big_table', timeout: 60000}, function (err, rows) {
+  if (err && err.code === 'PROTOCOL_SEQUENCE_TIMEOUT') {
+    throw new Error('too long to count table rows!');
+  }
+
+  if (err) {
+    throw err;
+  }
+
+  console.log(rows[0].count + ' rows');
+});
+9、同时可以对SQL错误代码的处理，示例代码如下：
+
+var connection = require('mysql').createConnection({
+  port: 84943, // WRONG PORT
+});
+
+connection.connect(function(err) {
+  console.log(err.code); // 'ECONNREFUSED'
+  console.log(err.fatal); // true
+});
+
+connection.query('SELECT 1', function(err) {
+  console.log(err.code); // 'ECONNREFUSED'
+  console.log(err.fatal); // true
+});
+最后，node mySQL提供强大的数据池群处理，以及SSL加密验证功能，在此不做说明，可查看具体API。

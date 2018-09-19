@@ -1,0 +1,285 @@
+ar path = require("path")
+方法
+序号	方法 & 描述
+1	path.normalize(p)
+规范化路径，注意'..' 和 '.'。
+2	path.join([path1][, path2][, ...])
+用于连接路径。该方法的主要用途在于，会正确使用当前系统的路径分隔符，Unix系统是"/"，Windows系统是"\"。
+3	path.resolve([from ...], to)
+将 to 参数解析为绝对路径。
+4	path.isAbsolute(path)
+判断参数 path 是否是绝对路径。
+5	path.relative(from, to)
+用于将相对路径转为绝对路径。
+6	path.dirname(p)
+返回路径中代表文件夹的部分，同 Unix 的dirname 命令类似。
+7	path.basename(p[, ext])
+返回路径中的最后一部分。同 Unix 命令 bashname 类似。
+8	path.extname(p)
+返回路径中文件的后缀名，即路径中最后一个'.'之后的部分。如果一个路径中并不包含'.'或该路径只包含一个'.' 且这个'.'为路径的第一个字符，则此命令返回空字符串。
+9	path.parse(pathString)
+返回路径字符串的对象。
+10	path.format(pathObject)
+从对象中返回路径字符串，和 path.parse 相反。
+属性
+序号	属性 & 描述
+1	path.sep
+平台的文件路径分隔符，'\\' 或 '/'。
+2	path.delimiter
+平台的分隔符, ; or ':'.
+3	path.posix
+提供上述 path 的方法，不过总是以 posix 兼容的方式交互。
+4	path.win32
+提供上述 path 的方法，不过总是以 win32 兼容的方式交互。
+实例
+创建 main.js 文件，代码如下所示：
+var path = require("path");
+
+// 格式化路径
+console.log('normalization : ' + path.normalize('/test/test1//2slashes/1slash/tab/..'));
+
+// 连接路径
+console.log('joint path : ' + path.join('/test', 'test1', '2slashes/1slash', 'tab', '..'));
+
+// 转换为绝对路径
+console.log('resolve : ' + path.resolve('main.js'));
+
+// 路径中文件的后缀名
+console.log('ext name : ' + path.extname('main.js'));
+代码执行结果如下：
+$ node main.js
+normalization : /test/test1/2slashes/1slash
+joint path : /test/test1/2slashes/1slash
+resolve : /web/com/1427176256_27423/main.js
+ext name : .js
+
+
+
+require('path')模块
+该模块包含用于处理和转换文件路径的实用程序。几乎所有这些方法只执行字符串转换。没有协商文件系统以检查路径是否有效。
+一、路径格式化、反格式化
+1.path.parse(pathString);
+将路径字符串转换成对象
+[javascript] view plain copy print?在CODE上查看代码片派生到我的代码片
+var path=require('path');
+//path.parse(pathString);
+//将路径字符串转换成对象
+//传入的路径当文件路径处理，name返回的是文件名或最后文件夹名
+var obj1=path.parse('/home/user/dir/file.txt');
+console.info(obj1);
+{ root: '/',   //根目录
+  dir: '/home/user/dir', //文件所在目录
+  base: 'file.txt',  //文件名
+  ext: '.txt', //文件扩展名
+  name: 'file' //文件名称，不含扩展名
+}
+var obj2=path.parse('C:\\path\\dir\\index.html');
+console.info(obj2);
+{ root: 'C:\\',
+  dir: 'C:\\path\\dir',
+  base: 'index.html',
+  ext: '.html',
+  name: 'index'
+}
+var ojb3=path.parse('C:\\path\\dir\\');
+console.info(ojb3);
+{ root: 'C:\\',
+  dir: 'C:\\path',
+  base: 'dir',
+  ext: '',
+  name: 'dir'
+}
+2.path.format(pathObject)
+将object对象序列化成字符串
+[javascript] view plain copy print?在CODE上查看代码片派生到我的代码片
+var path=require('path');
+//path.format(pathObject)
+//将object对象序列化成字符串
+// 结果证明 转换的时候，重点指定 目录dir 和 base文件名
+var url1=path.format({
+    dir:'/home/user/dir',
+    base:'file.txt'
+});
+var url2=path.format({
+    root:'f:\\',
+    base:'file.txt'
+});
+var url3=path.format({
+    root:'f:',
+    dir:'f:\\dir1\\dir2',
+    name:'file',
+    ext:'.txt'
+});
+var url4=path.format({
+    base:'file.txt'
+});
+var url5=path.format({
+    root:'f:',
+    dir:'f:\\dir1\\dir2',
+    base:'file.txt'
+});
+console.log('url1：',url1); // /home/user/dir\file.txt
+console.log('url2：',url2); // file.txt
+console.log('url3：',url3); // f:\dir1\dir2\
+console.log('url4：',url4); // file.txt
+console.log('url5：',url5); // f:\dir1\dir2\file.txt
+二、跨平台标准化
+1.path.normalize(p)
+标准化路径字符串，处理冗余的“ .. ”、“ . ”、“ / ”字符
+[javascript] view plain copy print?在CODE上查看代码片派生到我的代码片
+var path=require('path');
+//path.normalize(p) 标准化路径字符串，处理冗余的“ .. ”、“ . ”、“ / ”字符
+//如果在win下，返回 dir1\dir2格式
+//如果在unix下，返回 dir1/dir2格式
+var url1 = path.normalize('a/b/c/../user/vajoy/bin');
+var url2 = path.normalize('a/b/c///../user/vajoy/bin/');
+var url3 = path.normalize('./a/.././user/vajoy/bin/./');
+console.info(url1);
+console.info(url2);
+console.info(url3);
+2. path.join([path1], [path2], [...])
+将多个路径结合在一起，并转换为标准化的路径
+[javascript] view plain copy print?在CODE上查看代码片派生到我的代码片
+var path=require('path');
+//path.join([path1], [path2], [...])
+//将多个路径结合在一起，并转换为标准化的路径
+//数组想中有 /或\ 才是有效目录项
+//返回结果 已经进行了标准化处理 (path.normalize)
+var url1 = path.join('////./a', 'b////c', 'user/', 'vajoy', '..');
+var url2 = path.join('a', '../../', 'user/', 'vajoy', '..');
+var url4=path.join('c:\\one','\\abc\\','/dir/file.txt');
+//var url3 = path.join('a', '../../', {}, 'vajoy', '..');
+
+console.log('url1:',url1);  // \a\b\c\user
+console.log('url2:',url2);  // ..\user
+console.log('url4:',url4);  //   c:\one\abc\dir\file.txt
+//console.log('url3:',url3);  // 存在非路径字符串，故抛出异常
+3.path.sep
+返回对应平台下的文件夹分隔符，win下为'\'，*nix下为'/'
+[javascript] view plain copy print?在CODE上查看代码片派生到我的代码片
+var path=require('path');
+//path.sep
+//返回对应平台下的文件夹分隔符，win下为'\'，*nix下为'/'
+var url1 = path.sep;
+var url2 = 'foo\\bar\\baz'.split(path.sep);
+var url3 = 'foo/bar/baz'.split(path.sep);
+
+console.log('url1:',url1);  // win下为\，*nix下为/
+console.log('url2:',url2);  // [ 'foo', 'bar', 'baz' ]
+console.log('url3:',url3);  // win下返回[ 'foo/bar/baz' ]，但在*nix系统下会返回[ 'foo', 'bar', 'baz' ]
+4.path.delimiter
+返回对应平台下的路径分隔符，win下为';'，*nix下为':'
+[javascript] view plain copy print?在CODE上查看代码片派生到我的代码片
+var path=require('path');
+//path.delimiter
+//返回对应平台下的路径分隔符，win下为';'，*nix下为':'
+var env = process.env.PATH; //当前系统的环境变量PATH
+var url1 = env.split(path.delimiter);
+console.log('路径分隔符：',path.delimiter); //win下为“;”，*nix下为“:”
+console.log('env:',env);  // C:\ProgramData\Oracle\Java\javapath;C:\Program Files (x86)\Intel\iCLS Client\;
+console.log('url1:',url1);  // ['C:\ProgramData\Oracle\Java\javapath','C:\Program Files (x86)\Intel\iCLS Client\']
+三、绝对路径、相对路径处理
+1.path.isAbsolute(path)
+判断是否是绝对路径，比如 'E:/abc'，或者是以“/”开头的路径，二者都会返回true
+[javascript] view plain copy print?在CODE上查看代码片派生到我的代码片
+var path=require('path');
+//path.isAbsolute(path)
+//判断是否是绝对路径
+//比如 'E:/abc'，或者是以“/”开头的路径，二者都会返回true
+var url1 = path.isAbsolute('../testFiles/secLayer');
+var url2 = path.isAbsolute('./join.js');
+var url3 = path.isAbsolute('temp');
+var url4 = path.isAbsolute('/temp/../..');
+var url5 = path.isAbsolute('E:/github/nodeAPI/abc/efg');
+var url6 = path.isAbsolute('///temp123');
+
+console.log('url1:',url1);  // false
+console.log('url2:',url2);  // false
+console.log('url3:',url3);  // false
+console.log('url4:',url4);  // true
+console.log('url5:',url5);  // true
+console.log('url6:',url6);  // true
+2.path.relative(from,to)
+获取从 from 到 to 的相对路径
+[javascript] view plain copy print?在CODE上查看代码片派生到我的代码片
+var path=require('path');
+//path.relative(from,to)
+//获取从 from 到 to 的相对路径
+//如果跨越磁盘符，则直接返回to的字符串
+var path = require('path');
+
+var url1 = path.relative('C:\\vajoy\\test\\aaa', 'C:\\vajoy\\impl\\bbb');
+var url2 = path.relative('C:/vajoy/test/aaa', 'C:/vajoy/bbb');
+var url3 = path.relative('C:/vajoy/test/aaa', 'D:/vajoy/bbb');
+
+console.log('url1:',url1);  //..\..\impl\bbb
+console.log('url2:',url2);  //url2: ..\..\bbb
+console.log('url3:',url3);  //D:\vajoy\bbb
+3.path.resolve([from ...], to)
+从源地址 from 到目的地址 to 的绝对路径。既是使用cd命令的最后的绝对目录
+[javascript] view plain copy print?在CODE上查看代码片派生到我的代码片
+var path=require('path');
+//path.resolve([from ...], to)
+//从源地址 from 到目的地址 to 的绝对路径。
+//从当前执行js文件的目录算起，计算相对路径的绝对路径
+//如果指定内容跨越磁盘符，返回cd最后打开的绝对路径
+var url1 = path.resolve('.', 'testFiles/..', 'trdLayer');
+var url2=path.resolve('../../');
+var url3=path.resolve('../','e:\\mywork','f:\\test1');
+console.info(url1);
+console.info(url2);
+console.info(url3);
+四、目录，文件夹、文件名获取
+1.path.dirname(p)
+返回指定uri字符串中文件夹的路径，如果当前为目录，则返回上一级目录
+[javascript] view plain copy print?在CODE上查看代码片派生到我的代码片
+var path=require('path');
+//path.dirname(p)
+//返回指定uri字符串中文件夹的路径
+//如果当前为目录，则返回上一级目录
+//对于Url格式的指定解析无效
+var url1 = path.dirname('/foo/bar/baz/asdf/a.txt');
+var url2 = path.dirname('/foo/bar/baz/asdf/');
+var url3 = path.dirname('C:/vajoy/test/aaa');
+var url4=path.dirname('http://www.gongjuji.net/byte');
+
+console.log('url1:',url1);  // /foo/bar/baz/asdf
+console.log('url2:',url2);  // /foo/bar/baz
+console.log('url3:',url3);  // C:/vajoy/test
+console.log('url4:',url4);  // http://www.gongjuji.net
+2.path.basename(p,[ext])
+返回路径中的最后一部分，类似于Unix 的 basename 命令。 ext 为需要截掉的尾缀内容
+[javascript] view plain copy print?在CODE上查看代码片派生到我的代码片
+var path=require('path');
+//path.basename(p,[ext])
+// 返回路径中的最后一部分，类似于Unix 的 basename 命令。
+//  ext 为需要截掉的尾缀内容
+//  如果指定文件路径，返回文件名
+//  如果指定目录。返回最内层文件夹名
+var url1 = path.basename('/foo/bar/baz/asdf/a.txt');
+var url2 = path.basename('/foo/bar/baz/asdf/a.txt','.txt');
+var url3 = path.basename('/foo/bar/baz/asdf/');
+var url4 = path.basename('C:/vajoy/test/aaa');
+
+console.log('url1:',url1);  // a.txt
+console.log('url2:',url2);  // a
+console.log('url3:',url3);  // asdf
+console.log('url4:',url4);  // aaa
+3.path.extname(p)
+返回路径文件的扩展名（若存在）
+[javascript] view plain copy print?在CODE上查看代码片派生到我的代码片
+var path=require('path');
+//path.extname(p)
+//返回路径文件的扩展名（若存在）
+var url1 = path.extname('/foo/bar/baz/asdf/a.txt');
+var url2 = path.extname('/foo/bar/baz/asdf/a.txt.html');
+var url3 = path.extname('/foo/bar/baz/asdf/a.');
+var url4 = path.extname('C:/vajoy/test/.');
+var url5 = path.extname('C:/vajoy/test/a');
+
+console.log('url1:',url1);  // .txt
+console.log('url2:',url2);  // .html
+console.log('url3:',url3);  // .
+console.log('url4:',url4);  //
+console.log('url5:',url5);  //
+官网API：http://nodejs.cn/doc/node_4/path.html

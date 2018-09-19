@@ -1,0 +1,16 @@
+{
+    "service": {
+        "short_url": {
+            "api_key": "1062535737",
+            "source": 2815391962,
+            "api_url": "http://api.t.sina.com.cn/short_url/shorten.json"
+        },
+        "sms": {
+            "url": "http://116.62.31.140:9109/ws_gateway_service/notice/send_sms",
+            "key": "core-test"
+        },
+        "riskeys": {
+            "policy_detail_url": "http://test.m.anyi-tech.com/policy_detail_no.html"
+        }
+    }
+}

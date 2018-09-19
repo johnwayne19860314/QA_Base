@@ -1,0 +1,65 @@
+求知的木头
+node.js(六) UTIL模块
+
+1.inspect函数的基本用法
+util.inspect(object,[showHidden],[depth],[colors])是一个将任意对象转换为字符串的函数，通常用于调试和错误输出。它至少接受一个参数object，即要转换的对象,我们来学习它的简单用法。使用语法如下：
+
+var util = require('util');
+var result = util.inspect(object);
+console.log(result);
+2.format函数的基本用法
+
+format函数根据第一个参数，返回一个格式化字符串，第一个参数是一个可包含零个或多个占位符的字符串。每一个占位符被替换为与其对应的转换后 的值，支持的占位符有："%s(字符串)"、"%d(数字<整型和浮点型>)"、"%j(JSON)"、"%(单独一个百分号则不作为一个参 数)"。
+
+1：如果占位符没有相对应的参数，占位符将不会被替换.如示例：
+
+var util = require('util');
+var result = util.format('%s:%s', 'foo');
+console.log(result);
+运行结果：
+
+'foo:%s'
+2：如果有多个参数占位符，额外的参数将会调用util.inspect()转换为字符串。这些字符串被连接在一起，并且以空格分隔。如示例：
+
+var util = require('util');
+var result = util.format('%s:%s', 'foo', 'bar', 'baz');
+console.log(result);
+运行结果：
+
+'foo:bar baz'
+3：如果第一个参数是一个非格式化字符串，则会把所有的参数转成字符串并以空格隔开拼接在一块，而且返回该字符串。如示例：
+
+var util = require('util');
+var result = util.format(1, 2, 3);
+console.log(result);
+运行结果：
+
+'1 2 3'
+3.isArray函数的基本用法
+isArray函数可以判断对象是否为数组类型，是则返回ture,否则为false。语法如下：
+
+var util = require('util');
+var result = util.isArray(object);
+console.log(result);
+4.isDate函数的基本用法
+
+isDate函数可以判断对象是否为日期类型，是则返回ture,否则返回false。语法如下：
+
+var util = require('util');
+var result = util.isDate(object);
+console.log(result);
+5.isRegExp函数的基本用法
+isRegExp函数可以判断对象是否为正则类型，是则返回ture,否则返回false。语法如下：
+
+var util = require('util');
+var result = util.isRegExp(object);
+console.log(result);
+
+var utils = require('util')
+
+var a = [1,2,3,4,5,6]
+console.log(a.join(','))
+
+//var sql = utils.format("select * from yzb_product where user_id in (%s) and valid = 1  ORDER BY created_time desc limit 0,10 ",a.join(','))
+var sql = "select * from yzb_product where user_id in (" + a.join(',') + ") and valid = 1  ORDER BY created_time desc limit 0,10 "
+console.log(sql)
