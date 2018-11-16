@@ -1,7 +1,8 @@
 const request = require("request");
 const {logger, dLogger} = require("./logger");
 const {HTTPError, ConnectError} = require("./error");
-
+var https = require('https');
+var url_mod = require('url');
 function delay (delay_time) {
     return new Promise((resolve) => {
         setTimeout(resolve, delay_time);
@@ -101,6 +102,33 @@ class BaseRequester {
             } else {
                 return Promise.reject(err);
             }
+        });
+    }
+    _httpsRequest (url,options) {
+        var parsed_url = url_mod.parse(url);
+        return new Promise((resolve, reject) => {
+            var req = https.request({
+                    host: parsed_url.host,
+                    port: 443,
+                    path: parsed_url.path,
+                    pfx: options.pfx,
+                    passphrase: options.passphrase,
+                    method: options.method
+                }, function (res) {
+                    var content = '';
+                    res.on('data', function (chunk) {
+                        content += chunk;
+                    });
+                    res.on('end', function () {
+                        resolve(content);
+                    });
+                });
+        
+            req.on('error', function (e) {
+                reject(e);
+            });
+            req.write(options.data);
+            req.end();
         });
     }
 }
