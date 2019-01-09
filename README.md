@@ -1,24 +1,25 @@
-# 保险产品基础模块
+# 保险产品测试基础模块
  to be modified
 
 ## QuickStarts
 
 1. 安装模块
 
-`npm install git+http://gogs.pms.anyi-tech.com/AnyiTech/insure-base.git#<版本号>`
+
 
 2. 使用模块里的功能
 
 ```js
 
-const BaseActionManager = require("insure-base/bases/ins.am");
+const BaseActionManager = require("QA_Base/bases/ins.am");
 
-const idgen = require("insure-base/toolkits/generateid");
+const idgen = require("QA_base/toolkits/generateid");
 
-const errors = require("insure-base/toolkits/error");
+const errors = require("QA_base/toolkits/error");
 
 
 ```
+## dbQuery 模块可根据公司具体业务添加， 使用Sequelizer 框架
 
 ## Release Notes
 
