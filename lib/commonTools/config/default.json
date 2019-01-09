@@ -1,0 +1,56 @@
+{
+  "global": {
+    "mysql": {
+      "host": "116.62.28.180",
+      "user": "suningapi",
+      "password": "JS/EfRie+c21xKYD",
+      "database": "suningapi",
+      "dialect": "mysql",
+      "logging": true,
+      "timezone": "+08:00",
+      "pool": {
+        "max": 5,
+        "min": 0,
+        "idle": 10000
+      }
+    },
+    "wlzhou_test_mysql": {
+      "host": "116.62.28.180",
+      "user": "wlzhou",
+      "password": "Awlzhou@90514",
+      "database": "wlzhou_suningapi_test",
+      "dialect": "mysql",
+      "logging": false,
+      "timezone": "+08:00",
+      "pool": {
+        "max": 5,
+        "min": 0,
+        "idle": 10000
+      }
+    },
+    "redis": {
+      "host": "116.62.28.180",
+      "port": 6379,
+      "auth_pass": "Zut2nfneMU39PEDE"
+    },
+    "port_suningapi": 9016,
+    "token_url": "http://test.opr.riskeys.com/zhpt/user/user/userIsLogin.action",
+    "anyi_core": {
+      "verify_url": "http://127.0.0.1:8089/ws_order/verify",
+      "confirm_url": "http://127.0.0.1:8089/ws_order/confirm"
+    },
+    "suningapi": {
+      "domain_name": "http://127.0.0.1:9016",
+      "notify_url": "http://127.0.0.1:9016/ws_notify/notify/anyi_core_confirm_notify",
+      "notify_single_url": "http://127.0.0.1:9016/ws_notify/notify/anyi_core_confirm_notify_single",
+      "appid": "suning"
+    },
+    "suning": {
+      "pingan_appliance_install_notify_url": "http://103.255.94.162:9080/ism-uis/comfirmCallback.htm",
+      "pingan_appliance_install_auto_stop_notify_url": "http://103.255.94.162:9080/ism-uis/scheduleUpdateWorkFlag.htm"
+    },
+    "interface": {
+      "pingan_appliance_install_policy_url": "http://127.0.0.1:9016/ws_voucer/pingan_appliance_install/voucher_pdf"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "name": "insure-base",
+  "name": "QA-Base",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -21,10 +21,10 @@
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1"
   },
-  "description": "核心保险产品的基础模块，包括一系列初始化工具",
+  "description": "测试工具",
   "keywords": [
-    "insure", "base"
+    "qa", "base"
   ],
-  "author": "q.wang",
+  "author": "john.jiang",
   "license": "MIT"
 }
