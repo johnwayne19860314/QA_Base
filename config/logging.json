@@ -10,23 +10,6 @@
             "type": "dateFile",
             "filename": "logs/insure-base.log",
             "pattern": ".yyyy-MM-dd.log"
-        },
-        "mail": {
-            "type": "smtp",
-            "transport": "SMTP",
-            "SMTP": {
-                "host": "smtp.anyitech.ltd",
-                "secure": false,
-                "port": 25,
-                "auth": {
-                    "user": "service@anyitech.ltd",
-                    "pass": "anyitech"
-                }
-            },
-            "recipients": "dong.li@anyi-tech.com",
-            "sender": "service@anyitech.ltd",
-            "subject": "保险产品-错误日志",
-            "sendInterval": 600
         }
     },
     "categories": {
@@ -53,8 +36,7 @@
         "oops": {
             "appenders": [
                 "error",
-                "file",
-                "mail"
+                "file"
             ],
             "level": "ERROR"
         }

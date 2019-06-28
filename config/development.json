@@ -2,7 +2,7 @@
     "service": {
         "short_url": {
             "api_key": "",
-            "source": ,
+            "source": "",
             "api_url": ""
         },
         "sms": {
